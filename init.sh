@@ -30,8 +30,6 @@ cat > "$OUTPUT_FILE" <<EOF
 }
 EOF
 
-chmod 600 "$OUTPUT_FILE"
-
 # Create volume directories
 mkdir "./${POSTGRES_CONTAINER_NAME}-data"
 chmod 700 "./${POSTGRES_CONTAINER_NAME}-data"
