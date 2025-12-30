@@ -12,8 +12,7 @@ else
     exit 1
 fi
 
-# Output file
-OUTPUT_FILE=".servers.json"
+OUTPUT_FILE="./pgadmin-servers.json"
 
 cat > "$OUTPUT_FILE" <<EOF
 {
@@ -31,24 +30,14 @@ cat > "$OUTPUT_FILE" <<EOF
 }
 EOF
 
-# Set permissions for pgAdmin
 chmod 600 "$OUTPUT_FILE"
 
-echo "pgAdmin servers configuration written to $OUTPUT_FILE"
-echo "Permissions set to 600 (rw-------)"
-echo ""
-
-# Creating volume directories
+# Create volume directories
 mkdir "./${POSTGRES_CONTAINER_NAME}-data"
-mkdir "./${POSTGRES_CONTAINER_NAME}-pgadmin-data"
-echo "Volume directories created:"
-echo "./${POSTGRES_CONTAINER_NAME}-data"
-echo "./${POSTGRES_CONTAINER_NAME}-pgadmin-data"
-
-# Set permissions for volume directories
 chmod 700 "./${POSTGRES_CONTAINER_NAME}-data"
-chmod 700 "./${POSTGRES_CONTAINER_NAME}-pgadmin-data"
-echo "Permissions set to 700 (rwx------)"
-echo ""
+sudo chown "${HOST_UID}":"${HOST_GID}" "./${POSTGRES_CONTAINER_NAME}-data"
 
 echo "Initialization complete."
+echo "Artifacts created:"
+echo "- ${OUTPUT_FILE}"
+echo "- ./${POSTGRES_CONTAINER_NAME}-data/"

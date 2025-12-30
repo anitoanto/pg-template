@@ -1,4 +1,4 @@
 .env
-.servers.json
+pgadmin-servers.json
 **/*-data
 **/*-pgadmin-data

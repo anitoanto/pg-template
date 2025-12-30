@@ -12,8 +12,6 @@ services:
             - "${POSTGRES_PORT}:5432"
         volumes:
             - ./${POSTGRES_CONTAINER_NAME}-data:/var/lib/postgresql
-        networks:
-            - postgres-db-network
         user: "${HOST_UID}:${HOST_GID}"
 
     postgres-pgadmin:
@@ -29,11 +27,10 @@ services:
         depends_on:
             - postgres-db
         volumes:
-            - ./.servers.json:/pgadmin4/servers.json:ro
-            - ./${POSTGRES_CONTAINER_NAME}-pgadmin-data:/var/lib/pgadmin
-        networks:
-            - postgres-db-network
+            - ./pgadmin-servers.json:/pgadmin4/servers.json:ro
+            - pgadmin-data:/var/lib/pgadmin
 
-networks:
-    postgres-db-network:
-        driver: bridge
+volumes:
+    pgadmin-data:
+        name: ${POSTGRES_CONTAINER_NAME}-pgadmin-data
+        driver: local
