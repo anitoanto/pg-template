@@ -14,6 +14,7 @@ services:
             - ./${POSTGRES_CONTAINER_NAME}-data:/var/lib/postgresql
         networks:
             - postgres-db-network
+        user: "${HOST_UID}:${HOST_GID}"
 
     postgres-pgadmin:
         image: dpage/pgadmin4:9.11
