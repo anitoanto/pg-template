@@ -42,3 +42,4 @@ networks:
     specified_network:
         name: ${DOCKER_NETWORK_NAME}
         driver: bridge
+        external: ${DOCKER_EXTERNAL_NETWORK}
