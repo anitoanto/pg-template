@@ -1,5 +1,4 @@
 services:
-
     postgres-db:
         image: pgvector/pgvector:pg18-trixie
         container_name: ${POSTGRES_CONTAINER_NAME}
@@ -13,6 +12,8 @@ services:
         volumes:
             - ./${POSTGRES_CONTAINER_NAME}-data:/var/lib/postgresql
         user: "${HOST_UID}:${HOST_GID}"
+        networks:
+            - specified_network
 
     postgres-pgadmin:
         image: dpage/pgadmin4:9.11
@@ -29,8 +30,15 @@ services:
         volumes:
             - ./pgadmin-servers.json:/pgadmin4/servers.json:ro
             - pgadmin-data:/var/lib/pgadmin
+        networks:
+            - specified_network
 
 volumes:
     pgadmin-data:
         name: ${POSTGRES_CONTAINER_NAME}-pgadmin-data
         driver: local
+
+networks:
+    specified_network:
+        name: ${DOCKER_NETWORK_NAME}
+        driver: bridge
