@@ -1,3 +1,7 @@
 .env
 pgadmin-servers.json
 **/*-data
+backup.key
+backups
+.DS_Store
+.vscode
