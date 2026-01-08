@@ -3,6 +3,12 @@
 # Exit on error
 set -e
 
+if command -v sudo >/dev/null 2>&1; then
+    SUDO="sudo"
+else
+    SUDO=""
+fi
+
 # Load environment variables from .env
 if [ -f .env ]; then
     # Export variables defined in .env
@@ -33,7 +39,7 @@ EOF
 # Create volume directories
 mkdir "./${POSTGRES_CONTAINER_NAME}-data"
 chmod 700 "./${POSTGRES_CONTAINER_NAME}-data"
-sudo chown "${HOST_UID}":"${HOST_GID}" "./${POSTGRES_CONTAINER_NAME}-data"
+$SUDO chown "${HOST_UID}":"${HOST_GID}" "./${POSTGRES_CONTAINER_NAME}-data"
 
 echo "Initialization complete."
 echo "Artifacts created:"
