@@ -37,7 +37,7 @@ cat > "$OUTPUT_FILE" <<EOF
 EOF
 
 # Create volume directories
-mkdir "./${POSTGRES_CONTAINER_NAME}-data"
+mkdir -p "./${POSTGRES_CONTAINER_NAME}-data"
 chmod 700 "./${POSTGRES_CONTAINER_NAME}-data"
 $SUDO chown "${HOST_UID}":"${HOST_GID}" "./${POSTGRES_CONTAINER_NAME}-data"
 
