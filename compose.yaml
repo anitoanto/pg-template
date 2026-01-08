@@ -16,7 +16,7 @@ services:
             - specified_network
 
     postgres-pgadmin:
-        image: dpage/pgadmin4:9.9.0
+        image: dpage/pgadmin4:9.10.0
         container_name: ${POSTGRES_CONTAINER_NAME}-pgadmin
         restart: unless-stopped
         environment:
