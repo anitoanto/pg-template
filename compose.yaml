@@ -33,6 +33,37 @@ services:
         networks:
             - specified_network
 
+    postgres-backup:
+        image: alpine:3.23
+        container_name: ${POSTGRES_CONTAINER_NAME}-backup
+        depends_on:
+            - postgres-db
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./backups:/backups
+            - ./backup.key:/backup.key:ro
+            - ./.env:/.env:ro
+            - ./backup.sh:/backup.sh:ro
+        working_dir: /
+        entrypoint: ["sh", "-c"]
+        command: '
+            "apk add --no-cache
+            docker-cli
+            postgresql18-client
+            gzip
+            openssl
+            aws-cli
+            bash
+            && sleep infinity"
+            '
+        labels:
+            ofelia.enabled: "true"
+            ofelia.job-exec.postgres-backup-job.schedule: "@every 1h"
+            ofelia.job-exec.postgres-backup-job.command: "/backup.sh /backups"
+            ofelia.job-exec.postgres-backup-job.no-overlap: "true"
+        networks:
+            - specified_network
+
 volumes:
     pgadmin-data:
         name: ${POSTGRES_CONTAINER_NAME}-pgadmin-data
