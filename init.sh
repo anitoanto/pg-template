@@ -40,7 +40,10 @@ mkdir -p "./${POSTGRES_CONTAINER_NAME}-data"
 chmod 700 "./${POSTGRES_CONTAINER_NAME}-data"
 $SUDO chown "${HOST_UID}":"${HOST_GID}" "./${POSTGRES_CONTAINER_NAME}-data"
 
+mkdir -p "./backups"
+
 echo "Initialization complete."
 echo "Artifacts created:"
 echo "- ${OUTPUT_FILE}"
 echo "- ./${POSTGRES_CONTAINER_NAME}-data/"
+echo "- ./backups/"
