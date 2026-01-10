@@ -9,14 +9,13 @@ else
     SUDO=""
 fi
 
-# Load environment variables from .env
-if [ -f .env ]; then
-    # Export variables defined in .env
-    export $(grep -v '^#' .env | xargs)
-else
-    echo ".env file not found"
-    exit 1
-fi
+# -------------------------
+# Load environment safely
+# -------------------------
+set -a
+. ./.env
+set +a
+
 
 OUTPUT_FILE="./pgadmin-servers.json"
 
