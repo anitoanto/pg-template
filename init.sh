@@ -26,7 +26,7 @@ cat > "$OUTPUT_FILE" <<EOF
             "Name": "${POSTGRES_CONTAINER_NAME}",
             "Group": "Servers",
             "Host": "${POSTGRES_CONTAINER_NAME}",
-            "Port": ${POSTGRES_PORT},
+            "Port": 5432,
             "MaintenanceDB": "postgres",
             "Username": "${POSTGRES_USER}",
             "SSLMode": "prefer"
