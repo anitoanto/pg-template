@@ -36,6 +36,8 @@ services:
     postgres-backup:
         image: alpine:3.23
         container_name: ${POSTGRES_CONTAINER_NAME}-backup
+        profiles:
+            - backup
         depends_on:
             - postgres-db
         volumes:
