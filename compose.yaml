@@ -44,6 +44,7 @@ services:
             BACKUP_SCHEDULE: ${BACKUP_SCHEDULE}
         volumes:
             - ./backups:/backups
+            - ./logs:/logs
             - ./backup.key:/backup.key:ro
             - ./.env:/.env:ro
             - ./backup.sh:/backup.sh:ro

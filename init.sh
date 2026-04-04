@@ -32,8 +32,10 @@ chmod 700 "./${POSTGRES_CONTAINER_NAME}-data"
 $SUDO chown "${HOST_UID}:${HOST_GID}" "./${POSTGRES_CONTAINER_NAME}-data"
 
 mkdir -p ./backups
+mkdir -p ./logs
 
 echo "Initialized:"
 echo "  ./pgadmin-servers.json"
 echo "  ./${POSTGRES_CONTAINER_NAME}-data/"
 echo "  ./backups/"
+echo "  ./logs/"

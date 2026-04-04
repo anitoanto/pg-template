@@ -122,6 +122,8 @@ sh init.sh
                                          || fail "init.sh did not create data directory"
 [ -d backups ] && pass "init.sh created backups directory" \
               || fail "init.sh did not create backups directory"
+[ -d logs ] && pass "init.sh created logs directory" \
+           || fail "init.sh did not create logs directory"
 
 # Validate pgadmin-servers.json content (not just existence)
 grep -q "\"Host\": \"${POSTGRES_CONTAINER_NAME}\"" pgadmin-servers.json \
@@ -465,6 +467,28 @@ done
 sidecar_state=$(docker inspect -f '{{.State.Running}}' "${POSTGRES_CONTAINER_NAME}-backup" 2>/dev/null || echo "false")
 [ "$sidecar_state" = "true" ] && pass "Backup sidecar container is running" \
                                || fail "Backup sidecar container is not running"
+
+# Verify crontab inside the sidecar is configured to log to /logs/backup.log
+crontab_entry=$(docker exec "${POSTGRES_CONTAINER_NAME}-backup" crontab -l 2>/dev/null || echo "")
+echo "$crontab_entry" | grep -q "/logs/backup.log" \
+  && pass "Sidecar crontab logs to /logs/backup.log" \
+  || fail "Sidecar crontab does not reference /logs/backup.log"
+
+# Run a one-shot backup inside the sidecar to generate a log entry
+docker exec "${POSTGRES_CONTAINER_NAME}-backup" \
+  sh -c 'bash /backup.sh /backups >> /logs/backup.log 2>&1'
+
+# Verify the log file was written on the host (via the mounted ./logs volume)
+[ -f logs/backup.log ] && pass "logs/backup.log exists after backup run" \
+                       || fail "logs/backup.log not found after backup run"
+
+log_lines=$(wc -l < logs/backup.log | tr -d ' ')
+[ "$log_lines" -gt 0 ] && pass "logs/backup.log has content (${log_lines} lines)" \
+                        || fail "logs/backup.log is empty"
+
+grep -q "Backup complete:" logs/backup.log \
+  && pass "logs/backup.log contains 'Backup complete' entry" \
+  || fail "logs/backup.log missing 'Backup complete' entry"
 
 ###############################################################################
 # 18. Test pgAdmin accessibility (tested late to give it ample startup time)

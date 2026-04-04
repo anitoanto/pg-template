@@ -15,7 +15,7 @@ fi
 
 env > /etc/environment
 
-echo "$BACKUP_SCHEDULE /bin/sh -c '. /etc/environment && cd / && /backup.sh /backups' >> /var/log/backup.log 2>&1" \
+echo "$BACKUP_SCHEDULE /bin/sh -c '. /etc/environment && cd / && /backup.sh /backups' >> /logs/backup.log 2>&1" \
   | crontab -
 
 echo "Cron schedule: ${BACKUP_SCHEDULE}"
