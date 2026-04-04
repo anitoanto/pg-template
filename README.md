@@ -47,6 +47,10 @@ sh restore.sh backups/<filename>.dump.gz.enc <table_name>
 
 See [.env.sample](.env.sample) for all available options.
 
+## Support
+
+If you find this project useful, please consider starring the repository on GitHub, Thanks :)
+
 ## License
 
 [MIT](LICENSE)

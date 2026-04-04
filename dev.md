@@ -4,7 +4,6 @@
 
 - Docker & Docker Compose
 - Bash / Zsh
-- [bats-core](https://github.com/bats-core/bats-core) (for tests)
 
 ## Setup
 
@@ -29,17 +28,17 @@ docker compose --profile backup down
 
 ## Tests
 
-Install bats:
+For comprehensive testing with real Docker containers, PostgreSQL, pgAdmin, and MinIO (S3 mock):
 
-```sh
-brew install bats-core   # macOS
-# or: apt install bats   # Debian/Ubuntu
-```
+Prerequisites:
+- Docker & Docker Compose
+- openssl
+- curl
 
 Run:
 
 ```sh
-bats tests/
+bash tests/integration_test.sh
 ```
 
-Tests use mock binaries for `pg_dump`, `aws`, `docker`, etc. No running containers or cloud credentials required.
+This spins up a complete environment, inserts test data, creates an encrypted backup, drops data, and verifies the restore works correctly.

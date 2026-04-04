@@ -50,7 +50,9 @@ aws s3api list-objects \
   --endpoint-url "$R2_ENDPOINT" \
   --query "Contents | sort_by(@,&LastModified) | reverse(@)[${KEEP_REMOTE}:].Key" \
   --output text \
+  | tr '\t' '\n' \
   | while read -r key; do
+      [ -z "$key" ] || [ "$key" = "None" ] && continue
       echo "Deleting: ${key}"
       aws s3 rm "s3://${R2_BUCKET}/${key}" --endpoint-url "$R2_ENDPOINT"
     done

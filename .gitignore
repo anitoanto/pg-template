@@ -1,7 +1,8 @@
 .env
-pgadmin-servers.json
 **/*-data
 backup.key
 backups
-.DS_Store
+pgadmin-servers.json
+
 .vscode
+.DS_Store
