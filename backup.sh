@@ -47,7 +47,7 @@ mkdir -p "$BACKUP_DIR"
 # -------------------------
 # Backup
 # -------------------------
-echo "Creating backup: $LOCAL_FILE ..."
+echo "[${POSTGRES_CONTAINER_NAME}] Creating backup: $LOCAL_FILE ..."
 
 docker exec \
   -e PGPASSWORD="$POSTGRES_PASSWORD" \
