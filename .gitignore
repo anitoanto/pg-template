@@ -3,6 +3,7 @@
 backup.key
 backups
 pgadmin-servers.json
+logs
 
 .vscode
 .DS_Store
