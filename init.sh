@@ -1,25 +1,17 @@
 #!/bin/sh
-
-# Exit on error
 set -e
 
 if command -v sudo >/dev/null 2>&1; then
-    SUDO="sudo"
+  SUDO="sudo"
 else
-    SUDO=""
+  SUDO=""
 fi
 
-# -------------------------
-# Load environment safely
-# -------------------------
 set -a
 . ./.env
 set +a
 
-
-OUTPUT_FILE="./pgadmin-servers.json"
-
-cat > "$OUTPUT_FILE" <<EOF
+cat > ./pgadmin-servers.json <<EOF
 {
     "Servers": {
         "1": {
@@ -35,15 +27,13 @@ cat > "$OUTPUT_FILE" <<EOF
 }
 EOF
 
-# Create volume directories
 mkdir -p "./${POSTGRES_CONTAINER_NAME}-data"
 chmod 700 "./${POSTGRES_CONTAINER_NAME}-data"
-$SUDO chown "${HOST_UID}":"${HOST_GID}" "./${POSTGRES_CONTAINER_NAME}-data"
+$SUDO chown "${HOST_UID}:${HOST_GID}" "./${POSTGRES_CONTAINER_NAME}-data"
 
-mkdir -p "./backups"
+mkdir -p ./backups
 
-echo "Initialization complete."
-echo "Artifacts created:"
-echo "- ${OUTPUT_FILE}"
-echo "- ./${POSTGRES_CONTAINER_NAME}-data/"
-echo "- ./backups/"
+echo "Initialized:"
+echo "  ./pgadmin-servers.json"
+echo "  ./${POSTGRES_CONTAINER_NAME}-data/"
+echo "  ./backups/"
