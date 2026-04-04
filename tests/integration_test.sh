@@ -123,6 +123,17 @@ sh init.sh
 [ -d backups ] && pass "init.sh created backups directory" \
               || fail "init.sh did not create backups directory"
 
+# Validate pgadmin-servers.json content (not just existence)
+grep -q "\"Host\": \"${POSTGRES_CONTAINER_NAME}\"" pgadmin-servers.json \
+  && pass "pgadmin-servers.json has correct Host" \
+  || fail "pgadmin-servers.json missing/wrong Host"
+grep -q "\"Username\": \"${POSTGRES_USER}\"" pgadmin-servers.json \
+  && pass "pgadmin-servers.json has correct Username" \
+  || fail "pgadmin-servers.json missing/wrong Username"
+grep -q "\"Port\": 5432" pgadmin-servers.json \
+  && pass "pgadmin-servers.json has correct Port" \
+  || fail "pgadmin-servers.json missing/wrong Port"
+
 ###############################################################################
 # 1. Start PostgreSQL + pgAdmin
 ###############################################################################
@@ -412,7 +423,51 @@ remote_count_after=$(docker run --rm --network "${TEST_PREFIX}-net" \
                                  || fail "Remote rotation: ${remote_count_after} remote backups (expected ≤ 5)"
 
 ###############################################################################
-# 16. Test pgAdmin accessibility (tested late to give it ample startup time)
+# 16. Test restore.sh error handling
+###############################################################################
+info "Testing restore.sh error handling"
+
+# Missing backup file should exit non-zero
+restore_exit=0
+bash restore.sh "/nonexistent/backup.dump.gz.enc" 2>/dev/null || restore_exit=$?
+[ "$restore_exit" -ne 0 ] && pass "restore.sh exits non-zero for missing backup file" \
+                           || fail "restore.sh did not fail for missing backup file"
+
+# Wrong decryption key should exit non-zero
+cp backup.key backup.key.orig
+openssl rand -base64 32 > backup.key
+restore_exit=0
+bash restore.sh "$backup_file" 2>/dev/null || restore_exit=$?
+cp backup.key.orig backup.key
+[ "$restore_exit" -ne 0 ] && pass "restore.sh exits non-zero for wrong decryption key" \
+                           || fail "restore.sh did not fail for wrong decryption key"
+
+###############################################################################
+# 17. Test backup sidecar container (entrypoint.sh)
+###############################################################################
+info "Testing backup sidecar container"
+
+docker compose --profile backup up -d
+
+# entrypoint.sh installs packages then starts crond; wait for "Cron schedule:" in logs
+cron_ready=0
+for _attempt in $(seq 1 30); do
+  if docker logs "${POSTGRES_CONTAINER_NAME}-backup" 2>&1 | grep -q "Cron schedule:"; then
+    cron_ready=1
+    break
+  fi
+  sleep 3
+done
+
+[ "$cron_ready" = "1" ] && pass "Backup sidecar initialised crond with schedule" \
+                         || fail "Backup sidecar did not initialise crond in time"
+
+sidecar_state=$(docker inspect -f '{{.State.Running}}' "${POSTGRES_CONTAINER_NAME}-backup" 2>/dev/null || echo "false")
+[ "$sidecar_state" = "true" ] && pass "Backup sidecar container is running" \
+                               || fail "Backup sidecar container is not running"
+
+###############################################################################
+# 18. Test pgAdmin accessibility (tested late to give it ample startup time)
 ###############################################################################
 info "Testing pgAdmin"
 
@@ -442,7 +497,7 @@ else
 fi
 
 ###############################################################################
-# 17. Verify containers are running with expected names
+# 19. Verify containers are running with expected names
 ###############################################################################
 info "Verifying container states"
 
