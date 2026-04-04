@@ -13,7 +13,7 @@ if [ -z "$BACKUP_SCHEDULE" ]; then
   exit 1
 fi
 
-env > /etc/environment
+export -p > /etc/environment
 
 echo "$BACKUP_SCHEDULE /bin/sh -c '. /etc/environment && cd / && /backup.sh /backups' >> /logs/backup.log 2>&1" \
   | crontab -
