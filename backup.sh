@@ -49,13 +49,12 @@ mkdir -p "$BACKUP_DIR"
 # -------------------------
 echo "[${POSTGRES_CONTAINER_NAME}] Creating backup: $LOCAL_FILE ..."
 
-docker exec \
-  -e PGPASSWORD="$POSTGRES_PASSWORD" \
-  "$POSTGRES_CONTAINER_NAME" \
-  pg_dump -U "$POSTGRES_USER" -Fc "$POSTGRES_DB" \
+export PGPASSWORD="$POSTGRES_PASSWORD"
+pg_dump -h "$POSTGRES_CONTAINER_NAME" -U "$POSTGRES_USER" -Fc "$POSTGRES_DB" \
 | gzip \
 | openssl enc -aes-256-cbc -salt -pbkdf2 -pass file:./backup.key \
 > "$LOCAL_FILE"
+unset PGPASSWORD
 
 echo "Backup created successfully."
 

@@ -40,30 +40,17 @@ services:
             - backup
         depends_on:
             - postgres-db
+        environment:
+            BACKUP_SCHEDULE: ${BACKUP_SCHEDULE}
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
             - ./backups:/backups
             - ./backup.key:/backup.key:ro
             - ./.env:/.env:ro
             - ./backup.sh:/backup.sh:ro
+            - ./entrypoint.sh:/entrypoint.sh:ro
         working_dir: /
-        entrypoint: ["sh", "-c"]
+        entrypoint: ["sh", "/entrypoint.sh"]
         restart: "unless-stopped"
-        command: '
-            "apk add --no-cache
-            docker-cli
-            postgresql18-client
-            gzip
-            openssl
-            aws-cli
-            bash
-            && sleep infinity"
-            '
-        labels:
-            ofelia.enabled: "true"
-            ofelia.job-exec.postgres-backup-job.schedule: ${BACKUP_SCHEDULE}
-            ofelia.job-exec.postgres-backup-job.command: "/backup.sh /backups"
-            ofelia.job-exec.postgres-backup-job.no-overlap: "true"
         networks:
             - specified_network
 
